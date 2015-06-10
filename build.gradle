@@ -17,7 +17,7 @@ version = '1.0-SNAPSHOT'
 description = 'Build Timeline Plugin'
 
 jenkinsPlugin {
-    coreVersion = '1.580.1'
+    coreVersion = '1.600'
     displayName = 'Build Timeline Plugin'
     url = 'http://wiki.jenkins-ci.org/display/JENKINS/Build+Timeline+Plugin'
     gitHubUrl = 'https://github.com/radarsh/build-timeline'

@@ -20,9 +20,6 @@
                 <!--<f:entry title="${%Filter build executors}" help="/help/view-config/filter-executors.html">-->
                     <!--<f:checkbox name="filterExecutors" field="filterExecutors"/>-->
                 <!--</f:entry>-->
-                <!--<f:entry title="Start Job" help="Start Job">-->
-                    <!--<f:textbox name="startJob" field="startJob"/>-->
-                <!--</f:entry>-->
 
                 <!-- subtypes can put entries here. -->
                 <st:include page="configure-entries.jelly" optional="true" />
