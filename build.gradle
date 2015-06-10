@@ -24,9 +24,9 @@ jenkinsPlugin {
 
     developers {
         developer {
-            id 'adarsh'
-            name 'Adarsh Ramamurthy'
-            email 'adarsh.ramamurthy@gmail.com'
+            id = 'adarsh'
+            name = 'Adarsh Ramamurthy'
+            email = 'adarsh.ramamurthy@gmail.com'
         }
     }
 }
