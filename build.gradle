@@ -1,0 +1,32 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            url 'http://repo.jenkins-ci.org/releases/'
+        }
+    }
+    dependencies {
+        classpath 'org.jenkins-ci.tools:gradle-jpi-plugin:0.11.1'
+    }
+}
+
+apply plugin: 'org.jenkins-ci.jpi'
+
+group = 'com.adarshr'
+version = '1.0-SNAPSHOT'
+description = 'Build Timeline Plugin'
+
+jenkinsPlugin {
+    coreVersion = '1.580.1'
+    displayName = 'Build Timeline Plugin'
+    url = 'http://wiki.jenkins-ci.org/display/JENKINS/Build+Timeline+Plugin'
+    gitHubUrl = 'https://github.com/radarsh/build-timeline'
+
+    developers {
+        developer {
+            id 'adarsh'
+            name 'Adarsh Ramamurthy'
+            email 'adarsh.ramamurthy@gmail.com'
+        }
+    }
+}
