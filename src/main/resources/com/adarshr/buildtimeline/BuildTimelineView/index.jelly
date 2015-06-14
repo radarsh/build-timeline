@@ -1,78 +1,45 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
     <l:layout title="Build Timeline View">
+        <l:header>
+            <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+        </l:header>
         <st:include page="sidepanel.jelly" />
         <l:main-panel>
-            <h1>Main panel of build timeline view! ${it.upstreamJob}</h1>
-            <div id="timeline" style="width: 60%; height: 500px;"></div>
-            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-            <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+            <h1>Build Timeline for upstream job ${it.upstreamJob}</h1>
+            <div id="build-timeline" style="width: 100%; height: 300px;"></div>
             <script type="text/javascript">
-                google.load("visualization", "1", {packages: ["timeline"]});
+                google.load("visualization", "1.1", {packages: ["timeline"]});
+                google.setOnLoadCallback(drawChart);
 
-                $(document).ready(function () {
-                    start();
-                });
+                function drawChart() {
+                    var container = document.getElementById('build-timeline');
+                    container.onmouseover = new function(e) {
+                        console.log('mouseover');
+                    };
 
-
-                function drawChart(jobData) {
-                    var container = document.getElementById('timeline');
                     var chart = new google.visualization.Timeline(container);
                     var dataTable = new google.visualization.DataTable();
 
-                    dataTable.addColumn({type: 'string', id: 'Number'});
+                    dataTable.addColumn({type: 'string', id: 'Build Number'});
                     dataTable.addColumn({type: 'string', id: 'Name'});
                     dataTable.addColumn({type: 'date', id: 'Start'});
                     dataTable.addColumn({type: 'date', id: 'End'});
 
+                    var jobData = ${it.rows};
                     var rows = [];
 
                     for (i in jobData) {
+                        jobData[i][2] = new Date(jobData[i][2]);
+                        jobData[i][3] = new Date(jobData[i][3]);
+
                         rows.push(jobData[i]);
                     }
 
                     dataTable.addRows(rows);
 
-                    chart.draw(dataTable, {timeline: { showRowLabels: false }});
+                    chart.draw(dataTable, {tooltip: {isHtml: true}, timeline: { showRowLabels: true }});
                 }
-
-                function refreshChartData(buildNumber, jobNames) {
-                    for (var i in jobNames) {
-                        var job = jobNames[i];
-
-                        $.getJSON('${app.rootUrl}job/' + job + '/lastBuild/api/json', function (data) {
-                            var upstreamBuild = data.actions[0].causes[0].upstreamBuild;
-
-                            if (upstreamBuild &amp;&amp; buildNumber === upstreamBuild) {
-                                var jobName = data.fullDisplayName.split(' ')[0];
-                                $(document).data('jobs')[jobName] = [data.number + '', jobName, new Date(data.timestamp), new Date(parseInt(data.timestamp) + parseInt(data.duration))];
-                            }
-                        });
-                    }
-
-                    drawChart($(document).data('jobs'));
-                }
-
-                function start() {
-                    $(document).data('jobs', {});
-
-                    $.getJSON('${app.rootUrl}job/${it.upstreamJob}/lastBuild/api/json?tree=number', function (data) {
-                        var buildNumber = data.number;
-
-                        $.getJSON('${app.rootUrl}job/${it.upstreamJob}/api/json?pretty=true&amp;tree=downstreamProjects[name]', function (data) {
-                            var jobNames = [];
-
-                            for (var i in data.downstreamProjects) {
-                                jobNames.push(data.downstreamProjects[i].name);
-                            }
-
-                            setInterval(function () {
-                                refreshChartData(buildNumber, jobNames);
-                            }, 6000);
-                        });
-                    });
-                }
-
             </script>
         </l:main-panel>
     </l:layout>
