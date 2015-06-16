@@ -8,6 +8,7 @@ import hudson.util.ListBoxModel
 import jenkins.model.Jenkins
 import org.kohsuke.stapler.DataBoundConstructor
 import org.kohsuke.stapler.StaplerRequest
+import org.kohsuke.stapler.bind.JavaScriptMethod
 
 import static hudson.util.ListBoxModel.Option
 
@@ -26,6 +27,7 @@ class BuildTimelineView extends AbstractView {
         upstreamJob = req.submittedForm.upstreamJob
     }
 
+    @JavaScriptMethod
     String getRows() {
         Map rows = [:]
         addDownstreamProjects(upstreamProject, rows)
@@ -38,18 +40,21 @@ class BuildTimelineView extends AbstractView {
 
     private void addDownstreamProjects(AbstractProject startProject, Map rows) {
         rows[startProject.name] = getBuildMetadata(startProject)
-        startProject.downstreamProjects.collect {
+
+        startProject.downstreamProjects?.collect {
             addDownstreamProjects(it, rows)
             rows[it.name] = getBuildMetadata(it)
         }
     }
 
     private List getBuildMetadata(AbstractProject project) {
+        def lastBuild = project.lastSuccessfulBuild
+
         [
-            project.lastSuccessfulBuild.number.toString(),
+            lastBuild?.number?.toString(),
             project.name,
-            project.lastSuccessfulBuild.startTimeInMillis,
-            project.lastSuccessfulBuild.startTimeInMillis + project.lastSuccessfulBuild.duration
+            lastBuild?.startTimeInMillis,
+            lastBuild?.startTimeInMillis + lastBuild?.duration
         ]
     }
 
