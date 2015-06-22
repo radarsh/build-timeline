@@ -19,20 +19,20 @@ var colours = [
 ];
 
 var scaleX = d3.scale.linear().domain([0, 150]).range([0, 700]);
-var xAxis = d3.svg.axis().scale(scaleX).ticks(10);
+var xAxis = d3.svg.axis().scale(scaleX);
 
-var svgContainer = d3
+var svg = d3
     .select("#timeline")
     .append("svg")
     .attr("width", 800)
     .attr("height", 250);
 
-svgContainer.append("g")
+svg.append("g")
     .attr("class", "x-axis")
     .attr("transform", "translate(0," + 200 + ")")
     .call(xAxis);
 
-var rect = svgContainer.selectAll("rect")
+var rect = svg.selectAll("rect")
     .data(data)
     .enter()
     .append("rect");
@@ -52,7 +52,7 @@ rect.attr("x", function(d) {
         return colours[i].bg;
     });
 
-var text = svgContainer.selectAll("text.label")
+var text = svg.selectAll("text.label")
     .data(data)
     .enter()
     .append("text");
@@ -71,3 +71,18 @@ text.attr("x", function(d) {
     .text(function(d) {
         return d.name;
     });
+
+function make_x_axis() {
+    return d3.svg.axis()
+        .scale(scaleX)
+        .orient("bottom")
+        .ticks(10)
+}
+
+svg.append("g")
+    .attr("class", "grid")
+    .attr("transform", "translate(0,200)")
+    .call(make_x_axis()
+        .tickSize(-200, 0, 0)
+        .tickFormat("")
+);

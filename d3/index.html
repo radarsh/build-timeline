@@ -7,21 +7,26 @@
             body {
                 font: 12px sans-serif;
             }
-
             #timeline {
                 border: 1px solid #BBB;
                 width: 800px;
             }
-
             .x-axis path, .x-axis line {
                 fill: none;
                 stroke: #000;
                 shape-rendering: crispEdges;
             }
-
             text.label {
                 font-size: 10px;
                 font-weight: bold;
+            }
+            .grid .tick {
+                stroke: lightgrey;
+                stroke-opacity: 0.3;
+                shape-rendering: crispEdges;
+            }
+            .grid path {
+                stroke-width: 0;
             }
         </style>
     </head>
