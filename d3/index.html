@@ -4,8 +4,24 @@
         <meta charset="utf-8" />
         <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
         <style type="text/css">
+            body {
+                font: 12px sans-serif;
+            }
+
             #timeline {
-                border: 1px solid red;
+                border: 1px solid #BBB;
+                width: 800px;
+            }
+
+            .x-axis path, .x-axis line {
+                fill: none;
+                stroke: #000;
+                shape-rendering: crispEdges;
+            }
+
+            text.label {
+                font-size: 10px;
+                font-weight: bold;
             }
         </style>
     </head>
