@@ -39,17 +39,16 @@ class BuildTimelineView extends AbstractView {
     }
 
     private void addDownstreamProjects(AbstractProject startProject, List rows) {
-
         rows << getBuildMetadata(startProject)
 
         startProject.downstreamProjects?.collect {
             addDownstreamProjects(it, rows)
-            rows << getBuildMetadata(it)
         }
     }
 
     private Map getBuildMetadata(AbstractProject project) {
         def lastBuild = project.lastSuccessfulBuild
+
         [
             name: project.name,
             start :lastBuild?.startTimeInMillis,
