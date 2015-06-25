@@ -1,5 +1,4 @@
 package com.adarshr.buildtimeline
-
 import groovy.json.JsonOutput
 import hudson.Extension
 import hudson.model.AbstractProject
@@ -10,6 +9,7 @@ import org.kohsuke.stapler.DataBoundConstructor
 import org.kohsuke.stapler.StaplerRequest
 import org.kohsuke.stapler.bind.JavaScriptMethod
 
+import static hudson.Functions.getResourcePath
 import static hudson.util.ListBoxModel.Option
 
 class BuildTimelineView extends AbstractView {
@@ -32,6 +32,10 @@ class BuildTimelineView extends AbstractView {
         Set rows = []
         addDownstreamProjects(upstreamProject, rows)
         JsonOutput.toJson(rows)
+    }
+
+    String getResources() {
+        "$resourcePath/plugin/build-timeline"
     }
 
     private AbstractProject getUpstreamProject() {

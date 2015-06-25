@@ -2,62 +2,11 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
     <l:layout title="Build Timeline View">
         <l:header>
-            <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-            <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
-            <script src="http://momentjs.com/downloads/moment.min.js"></script>
-            <style type="text/css">
-                body {
-                    font: 10px sans-serif;
-                }
-                #timeline {
-                    border: 1px solid #BBB;
-                    width: 100%;
-                }
-                .x-axis path, .x-axis line {
-                    fill: none;
-                    stroke: #000;
-                    shape-rendering: crispEdges;
-                }
-                text.label {
-                    font-size: 10px;
-                    /*font-weight: bold;*/
-                }
-                .grid .tick {
-                    stroke: lightgrey;
-                    stroke-opacity: 0.3;
-                    shape-rendering: crispEdges;
-                }
-                .grid path {
-                    stroke-width: 0;
-                }
-                .d3-tip {
-                    line-height: 1;
-                    padding: 8px;
-                    background: rgba(0, 0, 0, 0.8);
-                    color: #fff;
-                    border-radius: 2px;
-                }
-
-                /* Creates a small triangle extender for the tooltip */
-                .d3-tip:after {
-                    box-sizing: border-box;
-                    display: inline;
-                    font-size: 10px;
-                    width: 100%;
-                    line-height: 1;
-                    color: rgba(0, 0, 0, 0.8);
-                    content: "\25BC";
-                    position: absolute;
-                    text-align: center;
-                }
-
-                /* Style northward tooltips differently */
-                .d3-tip.n:after {
-                    margin: -3px 0 0 0;
-                    top: 100%;
-                    left: 0;
-                }
-            </style>
+            <script src="${it.resources}/js/d3.v3.min.js" charset="utf-8"></script>
+            <script src="${it.resources}/js/d3.tip.v0.6.3.js"></script>
+            <script src="${it.resources}/js/moment.min.js"></script>
+            <script src="${it.resources}/js/timeline.js"></script>
+            <link href="${it.resources}/css/timeline.css" type="text/css" rel="stylesheet" />
         </l:header>
         <st:include page="sidepanel.jelly" />
         <l:main-panel>
@@ -65,116 +14,9 @@
 
             <div id="timeline"></div>
 
-            <!--<pre>-->
-                <!--<code>${it.rows}</code>-->
-            <!--</pre>-->
-
             <script type="text/javascript">
-                drawChart();
-
-                setInterval(drawChart, 10000);
-
-                function drawChart() {
-                    var it = <st:bind value="${it}" />;
-
-                    it.getRows(function(response) {
-                        var timeline = document.getElementById('timeline');
-                        timeline.innerHTML = '';
-
-                        var data = JSON.parse(response.responseJSON);
-
-                        console.log(data);
-
-                        var min = d3.min(data, function(d) {
-                            return d.start;
-                        });
-
-                        var max = d3.max(data, function(d) {
-                            return d.end;
-                        });
-
-
-                        var colours = ["red", "purple", "green", "teal", "pink", "yellow", "orange", "blue", "maroon"];
-                        var scaleX = d3.time.scale().domain([new Date(min), new Date(max)]).range([0, 1500]);
-                        var xAxis = d3.svg.axis().scale(scaleX);
-
-                        var svg = d3
-                            .select("#timeline")
-                            .append("svg")
-                            .attr("width", timeline.clientWidth)
-                            .attr("height", 500);
-
-                        svg.append("g")
-                            .attr("class", "x-axis")
-                            .attr("transform", "translate(0," + 450 + ")")
-                            .call(xAxis);
-
-
-                        var tip = d3.tip()
-                            .attr('class', 'd3-tip')
-                            .offset([-10, 0])
-                            .html(function(d) {
-                                return "Took " + moment.duration(new Date(d.end) - new Date(d.start)).humanize();
-                            });
-
-                        svg.call(tip);
-
-                        var rect = svg.selectAll("rect")
-                            .data(data)
-                            .enter()
-                            .append("rect");
-
-
-                        rect.attr("x", function(d) {
-                            return scaleX(new Date(d.start));
-                        })
-                        .attr("y", function(d, i) {
-                            return (i + 1) * 40;
-                        })
-                        .attr("width", function(d) {
-                            return scaleX(new Date(d.end)) - scaleX(new Date(d.start));
-                        })
-                        .attr("height", 20)
-                        .attr("fill", function(d, i) {
-                            return colours[i];
-                        })
-                        .on('mouseover', tip.show)
-                        .on('mouseout', tip.hide);
-
-                        var text = svg.selectAll("text.label")
-                            .data(data)
-                            .enter()
-                            .append("text");
-
-                        text.attr("x", function(d) {
-                            return scaleX(new Date(d.start));
-                        })
-                        .attr("y", function(d, i) {
-                            return (i + 1) * 40 - 2;
-                        })
-                        .attr("class", "label")
-                        .attr("text-anchor", "start")
-                        .attr("fill", "black")
-                        .text(function(d) {
-                            return d.name;
-                        });
-
-                        function make_x_axis() {
-                            return d3.svg.axis()
-                            .scale(scaleX)
-                            .orient("bottom")
-                            .ticks(10)
-                        }
-
-                        svg.append("g")
-                            .attr("class", "grid")
-                            .attr("transform", "translate(0,450)")
-                            .call(make_x_axis()
-                            .tickSize(-450, 0, 0)
-                            .tickFormat(""));
-
-                    });
-                }
+                var timeline = new Timeline(<st:bind value="${it}" />);
+                timeline.draw();
             </script>
         </l:main-panel>
     </l:layout>
