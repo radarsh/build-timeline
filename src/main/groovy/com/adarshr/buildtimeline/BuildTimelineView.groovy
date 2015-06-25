@@ -29,7 +29,7 @@ class BuildTimelineView extends AbstractView {
 
     @JavaScriptMethod
     String getRows() {
-        List rows = []
+        Set rows = []
         addDownstreamProjects(upstreamProject, rows)
         JsonOutput.toJson(rows)
     }
@@ -38,7 +38,7 @@ class BuildTimelineView extends AbstractView {
         Jenkins.instance.getItem(upstreamJob, Jenkins.instance, AbstractProject)
     }
 
-    private void addDownstreamProjects(AbstractProject startProject, List rows) {
+    private void addDownstreamProjects(AbstractProject startProject, Set rows) {
         rows << getBuildMetadata(startProject)
 
         startProject.downstreamProjects?.collect {

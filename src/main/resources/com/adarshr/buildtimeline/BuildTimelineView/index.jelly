@@ -11,8 +11,7 @@
                 }
                 #timeline {
                     border: 1px solid #BBB;
-                    width: 1600px;
-                    padding: 50px;
+                    width: 100%;
                 }
                 .x-axis path, .x-axis line {
                     fill: none;
@@ -79,7 +78,8 @@
                     var it = <st:bind value="${it}" />;
 
                     it.getRows(function(response) {
-                        document.getElementById('timeline').innerHTML = '';
+                        var timeline = document.getElementById('timeline');
+                        timeline.innerHTML = '';
 
                         var data = JSON.parse(response.responseJSON);
 
@@ -101,7 +101,7 @@
                         var svg = d3
                             .select("#timeline")
                             .append("svg")
-                            .attr("width", 1600)
+                            .attr("width", timeline.clientWidth)
                             .attr("height", 500);
 
                         svg.append("g")
