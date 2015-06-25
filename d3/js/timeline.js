@@ -1,36 +1,38 @@
 var data = [
-    {name: "Alpha", start: 10, end: 85},
-    {name: "Beta", start: 15, end: 75},
-    {name: "Gamma", start: 20, end: 40},
-    {name: "Delta", start: 40, end: 150},
-    {name: "Epsilon", start: 20, end: 60}
+    {name: "unstable-test-phase", start: 1435144688995, end: 1435144689448},
+    {name: "test-functional", start: 1435144698997, end: 1435144759854},
+    {name: "publish-rpm", start: 1435144769001, end: 1435144797254},
+    {name: "deploy-to-qa", start: 1435144804005, end: 1435144902780},
+    {name: "e2e", start: 1435144909013, end: 1435144923492},
+    {name: "promote-to-stable", start: 1435144929017, end: 1435144936001},
+    {name: "deploy-to-uat", start: 1435144944019, end: 1435145040276}
 ];
 
-var colours = [
-    {bg: "red", fg: "white"},
-    {bg: "purple", fg: "white"},
-    {bg: "green", fg: "white"},
-    {bg: "teal", fg: "white"},
-    {bg: "pink", fg: "black"},
-    {bg: "yellow", fg: "black"},
-    {bg: "orange", fg: "black"},
-    {bg: "blue", fg: "black"},
-    {bg: "maroon", fg: "black"}
-];
+var colours = ["red", "purple", "green", "teal", "pink", "yellow", "orange", "blue", "maroon"];
 
-var scaleX = d3.scale.linear().domain([0, 150]).range([0, 700]);
+var scaleX = d3.time.scale().domain([new Date(1435144688995), new Date(1435145040276)]).range([0, 1500]);
 var xAxis = d3.svg.axis().scale(scaleX);
 
 var svg = d3
     .select("#timeline")
     .append("svg")
-    .attr("width", 800)
+    .attr("width", 1600)
     .attr("height", 250);
 
 svg.append("g")
     .attr("class", "x-axis")
     .attr("transform", "translate(0," + 200 + ")")
     .call(xAxis);
+
+
+var tip = d3.tip()
+    .attr('class', 'd3-tip')
+    .offset([-10, 0])
+    .html(function(d) {
+        return "Took " + moment.duration(new Date(d.end) - new Date(d.start)).humanize();
+    });
+
+svg.call(tip);
 
 var rect = svg.selectAll("rect")
     .data(data)
@@ -39,18 +41,20 @@ var rect = svg.selectAll("rect")
 
 
 rect.attr("x", function(d) {
-        return scaleX(d.start);
+        return scaleX(new Date(d.start));
     })
     .attr("y", function(d, i) {
         return (i + 1) * 25;
     })
     .attr("width", function(d) {
-        return scaleX(d.end - d.start);
+        return scaleX(new Date(d.end)) - scaleX(new Date(d.start));
     })
     .attr("height", 20)
     .attr("fill", function(d, i) {
-        return colours[i].bg;
-    });
+        return colours[i];
+    })
+    .on('mouseover', tip.show)
+    .on('mouseout', tip.hide);
 
 var text = svg.selectAll("text.label")
     .data(data)
@@ -58,16 +62,14 @@ var text = svg.selectAll("text.label")
     .append("text");
 
 text.attr("x", function(d) {
-        return scaleX(d.end) - 10;
+        return scaleX(new Date(d.start));
     })
     .attr("y", function(d, i) {
-        return (i + 1) * 25 + 13;
+        return (i + 1) * 25 - 2;
     })
     .attr("class", "label")
-    .attr("text-anchor", "end")
-    .attr("fill", function(d, i) {
-        return colours[i].fg;
-    })
+    .attr("text-anchor", "start")
+    .attr("fill", "black")
     .text(function(d) {
         return d.name;
     });
