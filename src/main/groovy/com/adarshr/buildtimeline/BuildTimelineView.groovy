@@ -29,7 +29,7 @@ class BuildTimelineView extends AbstractView {
 
     @JavaScriptMethod
     String getRows() {
-        Map rows = [:]
+        List rows = []
         addDownstreamProjects(upstreamProject, rows)
         JsonOutput.toJson(rows)
     }
@@ -38,23 +38,22 @@ class BuildTimelineView extends AbstractView {
         Jenkins.instance.getItem(upstreamJob, Jenkins.instance, AbstractProject)
     }
 
-    private void addDownstreamProjects(AbstractProject startProject, Map rows) {
-        rows[startProject.name] = getBuildMetadata(startProject)
+    private void addDownstreamProjects(AbstractProject startProject, List rows) {
+
+        rows << getBuildMetadata(startProject)
 
         startProject.downstreamProjects?.collect {
             addDownstreamProjects(it, rows)
-            rows[it.name] = getBuildMetadata(it)
+            rows << getBuildMetadata(it)
         }
     }
 
-    private List getBuildMetadata(AbstractProject project) {
+    private Map getBuildMetadata(AbstractProject project) {
         def lastBuild = project.lastSuccessfulBuild
-
         [
-            lastBuild?.number?.toString(),
-            project.name,
-            lastBuild?.startTimeInMillis,
-            lastBuild?.startTimeInMillis + lastBuild?.duration
+            name: project.name,
+            start :lastBuild?.startTimeInMillis,
+            end: lastBuild?.startTimeInMillis + lastBuild?.duration
         ]
     }
 
