@@ -6,6 +6,13 @@
             <script src="${it.resources}/js/d3.tip.v0.6.3.js"></script>
             <script src="${it.resources}/js/moment.min.js"></script>
             <script src="${it.resources}/js/timeline.js"></script>
+            <script type="text/javascript">
+                document.addEventListener("DOMContentLoaded", function(event) {
+                    var timeline = new Timeline(<st:bind value="${it}" />);
+                    timeline.draw();
+                });
+            </script>
+
             <link href="${it.resources}/css/timeline.css" type="text/css" rel="stylesheet" />
         </l:header>
         <st:include page="sidepanel.jelly" />
@@ -13,11 +20,6 @@
             <h1>Build Timeline for upstream job ${it.upstreamJob}</h1>
 
             <div id="timeline"></div>
-
-            <script type="text/javascript">
-                var timeline = new Timeline(<st:bind value="${it}" />);
-                timeline.draw();
-            </script>
         </l:main-panel>
     </l:layout>
 </j:jelly>
