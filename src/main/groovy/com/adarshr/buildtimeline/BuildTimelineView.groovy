@@ -28,7 +28,7 @@ class BuildTimelineView extends AbstractView {
     }
 
     @JavaScriptMethod
-    String getRows() {
+    String getTimelineData() {
         Set rows = []
         addDownstreamProjects(upstreamProject, rows)
         JsonOutput.toJson(rows)

@@ -6,14 +6,17 @@ function Timeline(handle) {
 
     this.init = function() {
         if (!this.initialised) {
-            setInterval(this.draw, 10000);
+            setInterval(function(){
+                this.draw()
+            }.bind(this), 10000);
             this.initialised = true;
         }
     };
 
     this.draw = function() {
         this.init();
-        this.handle.getRows(function(response) {
+
+        this.handle.getTimelineData(function(response) {
             var timeline = document.getElementById('timeline');
             timeline.innerHTML = '';
 
@@ -29,15 +32,17 @@ function Timeline(handle) {
                 return d.end;
             });
 
+            var width = timeline.clientWidth - 20;
+
 
             var colours = ["red", "purple", "green", "teal", "pink", "yellow", "orange", "blue", "maroon"];
-            var scaleX = d3.time.scale().domain([new Date(min), new Date(max)]).range([0, 1500]);
-            var xAxis = d3.svg.axis().scale(scaleX);
+            var scaleX = d3.time.scale().domain([new Date(min), new Date(max)]).range([0, width]);
+            var xAxis = d3.svg.axis().scale(scaleX).ticks(20);
 
             var svg = d3
                 .select("#timeline")
                 .append("svg")
-                .attr("width", timeline.clientWidth)
+                .attr("width", width)
                 .attr("height", 500);
 
             svg.append("g")
@@ -99,7 +104,7 @@ function Timeline(handle) {
                 return d3.svg.axis()
                     .scale(scaleX)
                     .orient("bottom")
-                    .ticks(10)
+                    .ticks(20)
             }
 
             svg.append("g")
@@ -109,6 +114,6 @@ function Timeline(handle) {
                     .tickSize(-450, 0, 0)
                     .tickFormat(""));
 
-        });
+        }.bind(this));
     };
 }
