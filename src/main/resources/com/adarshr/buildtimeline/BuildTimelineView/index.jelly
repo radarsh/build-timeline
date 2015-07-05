@@ -8,8 +8,12 @@
             <script src="${it.resources}/js/timeline.js"></script>
             <script type="text/javascript">
                 document.addEventListener("DOMContentLoaded", function(event) {
-                    var timeline = new Timeline(<st:bind value="${it}" />);
-                    timeline.draw();
+                    var timeline = new Timeline({
+                        view: <st:bind value="${it}" />,
+                        container: 'timeline'
+                    });
+
+                    timeline.init();
                 });
             </script>
 

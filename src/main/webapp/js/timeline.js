@@ -1,75 +1,41 @@
 (function (scope) {
     "use strict";
 
-    var initialised = false;
-
     scope.Timeline = function (options) {
-        this.options = options;
+        this.view = options.view;
+        this.container = options.container;
     };
 
     scope.Timeline.prototype = {
-        _setupAutoRefresh: function () {
-            if (!initialised) {
-                setInterval(function(){
-                    this.draw();
-                }.bind(this), 10000);
-                initialised = true;
-            }
+        init: function() {
+            this.refresh();
+
+            setInterval(this.refresh.bind(this), 10000);
         },
 
-        draw: function () {
-            this._setupAutoRefresh();
-        }
-    };
-})(window);
+        refresh: function () {
+            this.view.getTimelineData(this.draw.bind(this));
+        },
 
+        draw: function(response) {
+            var data = JSON.parse(response.responseJSON);
+            var containerElement = document.getElementById(this.container);
+            containerElement.innerHTML = '';
 
-function Timeline(handle) {
-    "use strict";
+            var width = containerElement.clientWidth;
+            var min = d3.min(data, function(d) {return d.start;});
+            var max = d3.max(data, function(d) {return d.end;});
+            var colours = ["red", "purple", "green", "teal", "pink", "yellow", "orange", "blue", "maroon"];
+            var scaleX = d3.time.scale().domain([new Date(min), new Date(max)]).range([0, width]);
+            var xAxis = d3.svg.axis().scale(scaleX).ticks(20);
 
-    this.handle = handle;
-    this.initialised = false;
+            var svg = d3
+                .select("#" + this.container)
+                .append("svg")
+                .attr("width", width)
+                .attr("height", 500);
 
-    this.setupAutoRefresh = function() {
-        if (!this.initialised) {
-            setInterval(function(){
-                this.draw()
-            }.bind(this), 10000);
-            this.initialised = true;
-        }
-    };
-
-    this.draw = function() {
-        this.setupAutoRefresh();
-
-        this.handle.getTimelineData(function(response) {
-            var painter = new Painter(JSON.parse(response.responseJSON), 'timeline');
-            painter.drawChart();
-        }.bind(this));
-    };
-
-    function Painter(data, containerId) {
-        this.data = data;
-        this.container = document.getElementById(containerId);
-        this.width = this.container.clientWidth;
-        this.min = d3.min(this.data, function(d) {return d.start;});
-        this.max = d3.max(this.data, function(d) {return d.end;});
-        this.colours = ["red", "purple", "green", "teal", "pink", "yellow", "orange", "blue", "maroon"];
-        this.scaleX = d3.time.scale().domain([new Date(this.min), new Date(this.max)]).range([0, this.width]);
-        this.xAxis = d3.svg.axis().scale(scaleX).ticks(20);
-        this.svg = d3
-            .select("#" + containerId)
-            .append("svg")
-            .attr("width", this.width)
-            .attr("height", 500);
-
-
-        this.reset = function() {
-            this.container.innerHTML = '';
-        };
-
-        this.drawChart = function() {
-            this.svg.append("g")
+            svg.append("g")
                 .attr("class", "x-axis")
                 .attr("transform", "translate(0," + 450 + ")")
                 .call(xAxis);
@@ -78,41 +44,41 @@ function Timeline(handle) {
                 .attr('class', 'd3-tip')
                 .offset([-10, 0])
                 .html(function(d) {
-                    return "Took " + moment.duration(new Date(d.end) - new Date(d.start)).humanize();
+                    var duration = moment.duration(new Date(d.end) - new Date(d.start)).humanize();
+                    return "Took " + duration + ", started " + new Date(d.start);
                 });
 
-            this.svg.call(tip);
+            svg.call(tip);
 
-            var rect = this.svg.selectAll("rect")
-                .data(this.data)
+            var rect = svg.selectAll("rect")
+                .data(data)
                 .enter()
                 .append("rect");
 
-
             rect.attr("x", function(d) {
-                return this.scaleX(new Date(d.start));
-            })
+                    return scaleX(new Date(d.start));
+                })
                 .attr("y", function(d, i) {
                     return (i + 1) * 40;
                 })
                 .attr("width", function(d) {
-                    return this.scaleX(new Date(d.end)) - this.scaleX(new Date(d.start));
+                    return scaleX(new Date(d.end)) - scaleX(new Date(d.start));
                 })
                 .attr("height", 20)
                 .attr("fill", function(d, i) {
-                    return this.colours[i];
+                    return colours[i];
                 })
                 .on('mouseover', tip.show)
                 .on('mouseout', tip.hide);
 
-            var text = this.svg.selectAll("text.label")
-                .data(this.data)
+            var text = svg.selectAll("text.label")
+                .data(data)
                 .enter()
                 .append("text");
 
             text.attr("x", function(d) {
-                return this.scaleX(new Date(d.start));
-            })
+                    return scaleX(new Date(d.start));
+                })
                 .attr("y", function(d, i) {
                     return (i + 1) * 40 - 2;
                 })
@@ -125,17 +91,17 @@ function Timeline(handle) {
 
             function make_x_axis() {
                 return d3.svg.axis()
-                    .scale(this.scaleX)
+                    .scale(scaleX)
                     .orient("bottom")
                     .ticks(20)
             }
 
-            this.svg.append("g")
+            svg.append("g")
                 .attr("class", "grid")
                 .attr("transform", "translate(0,450)")
                 .call(make_x_axis()
                     .tickSize(-450, 0, 0)
                     .tickFormat(""));
-        };
-    }
-}
+        }
+    };
+})(window);
