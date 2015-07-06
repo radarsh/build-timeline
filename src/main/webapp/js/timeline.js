@@ -23,6 +23,7 @@
             containerElement.innerHTML = '';
 
             var width = containerElement.clientWidth;
+            var height = data.length * 40 + 80;
             var min = d3.min(data, function(d) {return d.start;});
             var max = d3.max(data, function(d) {return d.end;});
             var colours = ["red", "purple", "green", "teal", "pink", "yellow", "orange", "blue", "maroon"];
@@ -33,11 +34,11 @@
                 .select("#" + this.container)
                 .append("svg")
                 .attr("width", width)
-                .attr("height", 500);
+                .attr("height", height);
 
             svg.append("g")
                 .attr("class", "x-axis")
-                .attr("transform", "translate(0," + 450 + ")")
+                .attr("transform", "translate(0," + (height - 25) + ")")
                 .call(xAxis);
 
             var tip = d3.tip()
@@ -45,7 +46,7 @@
                 .offset([-10, 0])
                 .html(function(d) {
                     var duration = moment.duration(new Date(d.end) - new Date(d.start)).humanize();
-                    return "Took " + duration + ", started " + new Date(d.start);
+                    return "Took " + duration;
                 });
 
             svg.call(tip);
@@ -98,9 +99,9 @@
 
             svg.append("g")
                 .attr("class", "grid")
-                .attr("transform", "translate(0,450)")
+                .attr("transform", "translate(0,"+ (height - 25) + ")")
                 .call(make_x_axis()
-                    .tickSize(-450, 0, 0)
+                    .tickSize(-(height - 25), 0, 0)
                     .tickFormat(""));
         }
     };
