@@ -31,10 +31,7 @@ class BuildTimelineView extends AbstractView {
     String getTimelineData() {
         Set rows = []
         addDownstreamProjects(upstreamProject, rows)
-
-        List rowList = rows.asList()
-        rowList.sort {it.start}
-        JsonOutput.toJson(rowList)
+        JsonOutput.toJson(rows.asList().sort {it.start})
     }
 
     String getResources() {
