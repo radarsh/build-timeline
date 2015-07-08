@@ -21,7 +21,7 @@
         </l:header>
         <st:include page="sidepanel.jelly" />
         <l:main-panel>
-            <h1>Build Timeline for upstream job ${it.upstreamJob}</h1>
+            <h1>Build timeline for ${it.upstreamJob}</h1>
 
             <div id="timeline"></div>
         </l:main-panel>

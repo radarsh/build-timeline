@@ -23,7 +23,7 @@
             containerElement.innerHTML = '';
 
             var width = containerElement.clientWidth;
-            var height = data.length * 40 + 80;
+            var height = data.length * 45 + 80;
             var min = d3.min(data, function(d) {return d.start;});
             var max = d3.max(data, function(d) {return d.end;});
             var colours = [
@@ -61,6 +61,20 @@
                 });
 
             svg.call(tip);
+
+            function make_x_axis() {
+                return d3.svg.axis()
+                    .scale(scaleX)
+                    .orient("bottom")
+                    .ticks(20)
+            }
+
+            svg.append("g")
+                .attr("class", "grid")
+                .attr("transform", "translate(0,"+ (height - 25) + ")")
+                .call(make_x_axis()
+                    .tickSize(-(height - 25), 0, 0)
+                    .tickFormat(""));
 
             var rect = svg.selectAll("rect")
                 .data(data)
@@ -100,20 +114,6 @@
                 .text(function(d) {
                     return d.name;
                 });
-
-            function make_x_axis() {
-                return d3.svg.axis()
-                    .scale(scaleX)
-                    .orient("bottom")
-                    .ticks(20)
-            }
-
-            svg.append("g")
-                .attr("class", "grid")
-                .attr("transform", "translate(0,"+ (height - 25) + ")")
-                .call(make_x_axis()
-                    .tickSize(-(height - 25), 0, 0)
-                    .tickFormat(""));
         }
     };
 })(window);
