@@ -26,7 +26,18 @@
             var height = data.length * 40 + 80;
             var min = d3.min(data, function(d) {return d.start;});
             var max = d3.max(data, function(d) {return d.end;});
-            var colours = ["red", "purple", "green", "teal", "pink", "yellow", "orange", "blue", "maroon"];
+            var colours = [
+                "#4D4D4D", // gray
+                "#5DA5DA", // blue
+                "#FAA43A", // orange
+                "#60BD68", // green
+                "#F17CB0", // pink
+                "#B2912F", // brown
+                "#B276B2", // purple
+                "#DECF3F", // yellow
+                "#F15854"  // red
+            ];
+
             var scaleX = d3.time.scale().domain([new Date(min), new Date(max)]).range([0, width]);
             var xAxis = d3.svg.axis().scale(scaleX).ticks(20);
 
@@ -60,12 +71,12 @@
                     return scaleX(new Date(d.start));
                 })
                 .attr("y", function(d, i) {
-                    return (i + 1) * 40;
+                    return (i + 1) * 45;
                 })
                 .attr("width", function(d) {
                     return scaleX(new Date(d.end)) - scaleX(new Date(d.start));
                 })
-                .attr("height", 20)
+                .attr("height", 23)
                 .attr("fill", function(d, i) {
                     return colours[i];
                 })
@@ -81,7 +92,7 @@
                     return scaleX(new Date(d.start));
                 })
                 .attr("y", function(d, i) {
-                    return (i + 1) * 40 - 2;
+                    return (i + 1) * 45 - 5;
                 })
                 .attr("class", "label")
                 .attr("text-anchor", "start")
