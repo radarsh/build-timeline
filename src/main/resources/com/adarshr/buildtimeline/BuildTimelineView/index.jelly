@@ -1,6 +1,6 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-    <l:layout title="Build Timeline View">
+    <l:layout title="Build Timeline - ${it.upstreamJob}">
         <l:header>
             <script src="${it.resources}/js/d3.v3.min.js" charset="utf-8"></script>
             <script src="${it.resources}/js/d3.tip.v0.6.3.js"></script>
@@ -10,7 +10,7 @@
                 document.addEventListener("DOMContentLoaded", function(event) {
                     var timeline = new Timeline({
                         view: <st:bind value="${it}" />,
-                        container: 'timeline'
+                        containerSelector: '#timeline'
                     });
 
                     timeline.init();
