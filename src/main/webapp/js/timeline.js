@@ -2,15 +2,21 @@
     "use strict";
 
     var COLOURS = [
-        "#4D4D4D", // gray
-        "#5DA5DA", // blue
-        "#FAA43A", // orange
-        "#60BD68", // green
-        "#F17CB0", // pink
-        "#B2912F", // brown
-        "#B276B2", // purple
-        "#DECF3F", // yellow
-        "#F15854"  // red
+        "#4D4D4D",
+        "#5DA5DA",
+        "#FAA43A",
+        "#60BD68",
+        "#F2A9A2",
+        "#89FFC8",
+        "#B276B2",
+        "#F7E967",
+        "#F15854",
+        "#3E6DB2",
+        "#AECE5C",
+        "#B73E26",
+        "#256629",
+        "#727BC6",
+        "#878A94"
     ];
 
     var tip = d3.tip()
