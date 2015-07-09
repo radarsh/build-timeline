@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="../../main/webapp/css/timeline.css" />
+        <style type="text/css">
+            body, table, form, td, th, p {
+                color: #333;
+            }
+            body, table, form, input, td, th, p, textarea, select {
+                font-family: Helvetica,Arial,sans-serif;
+                font-size: 13px;
+            }
+        </style>
+        <script src="../../main/webapp/js/d3.v3.min.js" charset="utf-8"></script>
+        <script src="../../main/webapp/js/d3.tip.v0.6.3.js"></script>
+        <script src="../../main/webapp/js/moment.min.js"></script>
+        <script type="text/javascript">
+            document.addEventListener("DOMContentLoaded", function(event) {
+                var timeline = new Timeline({
+                    view: {
+                        getTimelineData: function (callback) {
+                            callback({
+                                responseJSON: JSON.stringify([
+                                    {name: "unstable-test-phase", start: new Date(2015, 7, 1, 20, 0, 0).getTime(), end: new Date(2015, 7, 1, 20, 0, 50).getTime(), status: "success"},
+                                    {name: "test-functional-1", start: new Date(2015, 7, 1, 20, 1, 1).getTime(), end: new Date(2015, 7, 1, 20, 5, 30).getTime(), status: "success"},
+                                    {name: "test-functional-2", start: new Date(2015, 7, 1, 20, 1, 5).getTime(), end: new Date(2015, 7, 1, 20, 8, 40).getTime(), status: "success"},
+                                    {name: "test-functional-3", start: new Date(2015, 7, 1, 20, 1, 5).getTime(), end: new Date(2015, 7, 1, 20, 9, 10).getTime(), status: "success"},
+                                    {name: "publish-rpm", start: new Date(2015, 7, 1, 20, 9, 50).getTime(), end: new Date(2015, 7, 1, 20, 14, 0).getTime(), status: "success"},
+                                    {name: "deploy-to-qa-1", start: new Date(2015, 7, 1, 20, 14, 10).getTime(), end: new Date(2015, 7, 1, 20, 18, 30).getTime(), status: "failure"},
+                                    {name: "deploy-to-qa-2", start: new Date(2015, 7, 1, 20, 14, 10).getTime(), end: new Date(2015, 7, 1, 20, 19, 0).getTime(), status: "failure"},
+                                    {name: "e2e", start: new Date(2015, 7, 1, 20, 19, 10).getTime(), end: new Date(2015, 7, 1, 20, 23, 0).getTime(), status: "success"},
+                                    {name: "promote-to-stable", start: new Date(2015, 7, 1, 20, 23, 10).getTime(), end: new Date(2015, 7, 1, 20, 24, 50).getTime(), status: "building"},
+                                    {name: "deploy-to-uat", start: new Date(2015, 7, 1, 20, 25, 0).getTime(), end: new Date(2015, 7, 1, 20, 30, 0).getTime(), status: "building"}
+                                ])
+                            });
+                        }
+                    },
+                    containerSelector: '#timeline'
+                });
+
+                timeline.init();
+            });
+        </script>
+    </head>
+    <body>
+        <div id="timeline"></div>
+
+        <!--<div style="background-color: #4D4D4D; width: 300px; height: 30px">1</div>
+        <div style="background-color: #5DA5DA; width: 300px; height: 30px">2</div>
+        <div style="background-color: #FAA43A; width: 300px; height: 30px">3</div>
+        <div style="background-color: #60BD68; width: 300px; height: 30px">4</div>
+        <div style="background-color: #F2A9A2; width: 300px; height: 30px">5</div>
+        <div style="background-color: #89FFC8; width: 300px; height: 30px">6</div>
+        <div style="background-color: #B276B2; width: 300px; height: 30px">7</div>
+        <div style="background-color: #F7E967; width: 300px; height: 30px">8</div>
+        <div style="background-color: #F15854; width: 300px; height: 30px">9</div>
+        <div style="background-color: #3E6DB2; width: 300px; height: 30px">10</div>
+        <div style="background-color: #AECE5C; width: 300px; height: 30px">11</div>
+        <div style="background-color: #B73E26; width: 300px; height: 30px">12</div>
+        <div style="background-color: #256629; width: 300px; height: 30px">13</div>
+        <div style="background-color: #727BC6; width: 300px; height: 30px">14</div>
+        <div style="background-color: #878A94; width: 300px; height: 30px">15</div>-->
+
+        <script src="../../main/webapp/js/timeline.js"></script>
+    </body>
+</html>

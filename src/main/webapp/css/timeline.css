@@ -28,9 +28,10 @@ text.label {
 .d3-tip {
     line-height: 1;
     padding: 8px;
-    background: rgba(0, 0, 0, 0.8);
-    color: #fff;
+    color: black;
+    background-color: #FEFEFE;
     border-radius: 2px;
+    box-shadow: 0 3px 2px 2px rgba(2, 2, 2, 0.3);
 }
 
 /* Creates a small triangle extender for the tooltip */
@@ -40,7 +41,7 @@ text.label {
     font-size: 10px;
     width: 100%;
     line-height: 1;
-    color: rgba(0, 0, 0, 0.8);
+    color: #555;
     content: "\25BC";
     position: absolute;
     text-align: center;

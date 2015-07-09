@@ -24,7 +24,11 @@
         .offset([-10, 0])
         .html(function(d) {
             var duration = moment.duration(new Date(d.end) - new Date(d.start)).humanize();
-            return "Took " + duration;
+            return "<div><strong>" + d.name + "</strong>"
+                + "<hr/>Started " + new Date(d.start).toLocaleTimeString()
+                + "<br/>Took " + duration
+                + "<br/>Result " + d.status
+                + "</div>"
         });
 
     scope.Timeline = function (options) {
@@ -115,7 +119,13 @@
                 })
                 .attr("class", "label")
                 .attr("text-anchor", "start")
-                .attr("fill", "black")
+                .attr("fill", function(d) {
+                    if (d.status == "success" || d.status == "building") {
+                        return "black";
+                    } if (d.status == "failure") {
+                        return "red";
+                    }
+                })
                 .text(function(d) {
                     return d.name;
                 });
