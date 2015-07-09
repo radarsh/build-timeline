@@ -1,103 +1,124 @@
-var data = [
-    {name: "unstable-test-phase", start: 1435144688995, end: 1435144689448},
-    {name: "test-functional", start: 1435144698997, end: 1435144759854},
-    {name: "publish-rpm", start: 1435144769001, end: 1435144797254},
-    {name: "deploy-to-qa", start: 1435144804005, end: 1435144902780},
-    {name: "e2e", start: 1435144909013, end: 1435144923492},
-    {name: "promote-to-stable", start: 1435144929017, end: 1435144936001},
-    {name: "deploy-to-uat", start: 1435144944019, end: 1435145040276}
-];
+(function (scope) {
+    "use strict";
 
-data = [
-    {"name":"functional-phase","start":1434458939111,"end":1434458949140},{"name":"test-job-1","start":1434458956922,"end":1434458996947},{"name":"test-job-1","start":1434458956922,"end":1434458996947},{"name":"test-job-2","start":1434458956922,"end":1434459006958},{"name":"test-job-2","start":1434458956922,"end":1434459006958},{"name":"test-job-3","start":1434458996952,"end":1434459046981},{"name":"test-job-3","start":1434458996952,"end":1434459046981}
-];
+    var COLOURS = [
+        "#4D4D4D",
+        "#5DA5DA",
+        "#FAA43A",
+        "#60BD68",
+        "#F2A9A2",
+        "#89FFC8",
+        "#B276B2",
+        "#F7E967",
+        "#F15854",
+        "#3E6DB2",
+        "#AECE5C",
+        "#B73E26",
+        "#256629",
+        "#727BC6",
+        "#878A94"
+    ];
 
-var min = d3.min(data, function(d) {
-    return d.start;
-});
+    var tip = d3.tip()
+        .attr('class', 'd3-tip')
+        .offset([-10, 0])
+        .html(function(d) {
+            var duration = moment.duration(new Date(d.end) - new Date(d.start)).humanize();
+            return "Took " + duration;
+        });
 
-var max = d3.max(data, function(d) {
-    return d.end;
-});
+    scope.Timeline = function (options) {
+        this.view = options.view;
+        this.container = document.querySelector(options.containerSelector);
+    };
 
-var colours = ["red", "purple", "green", "teal", "pink", "yellow", "orange", "blue", "maroon"];
-var scaleX = d3.time.scale().domain([new Date(min), new Date(max)]).range([0, 1500]);
-var xAxis = d3.svg.axis().scale(scaleX);
+    scope.Timeline.prototype = {
+        init: function() {
+            this._refresh();
 
-console.log("min is " + min);
+            setInterval(this._refresh.bind(this), 10000);
+        },
 
-var svg = d3
-    .select("#timeline")
-    .append("svg")
-    .attr("width", 1600)
-    .attr("height", 500);
+        _refresh: function () {
+            this.view.getTimelineData(this._draw.bind(this));
+        },
 
-svg.append("g")
-    .attr("class", "x-axis")
-    .attr("transform", "translate(0," + 450 + ")")
-    .call(xAxis);
+        _draw: function(response) {
+            var data = JSON.parse(response.responseJSON);
+            this.container.innerHTML = '';
 
+            var width = this.container.clientWidth;
+            var height = data.length * 45 + 80;
+            var min = d3.min(data, function(d) {return d.start;});
+            var max = d3.max(data, function(d) {return d.end;});
+            var xScale = d3.time.scale().domain([new Date(min), new Date(max)]).range([0, width]);
+            var xAxis = d3.svg.axis().scale(xScale).ticks(20);
 
-var tip = d3.tip()
-    .attr('class', 'd3-tip')
-    .offset([-10, 0])
-    .html(function(d) {
-        return "Took " + moment.duration(new Date(d.end) - new Date(d.start)).humanize();
-    });
+            var svg = d3
+                .select(this.container)
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height);
 
-svg.call(tip);
+            svg.append("g")
+                .attr("class", "x-axis")
+                .attr("transform", "translate(0," + (height - 25) + ")")
+                .call(xAxis);
 
-var rect = svg.selectAll("rect")
-    .data(data)
-    .enter()
-    .append("rect");
+            svg.call(tip);
 
+            function make_x_axis() {
+                return d3.svg.axis()
+                    .scale(xScale)
+                    .orient("bottom")
+                    .ticks(20)
+            }
 
-rect.attr("x", function(d) {
-        return scaleX(new Date(d.start));
-    })
-    .attr("y", function(d, i) {
-        return (i + 1) * 40;
-    })
-    .attr("width", function(d) {
-        return scaleX(new Date(d.end)) - scaleX(new Date(d.start));
-    })
-    .attr("height", 20)
-    .attr("fill", function(d, i) {
-        return colours[i];
-    })
-    .on('mouseover', tip.show)
-    .on('mouseout', tip.hide);
+            svg.append("g")
+                .attr("class", "grid")
+                .attr("transform", "translate(0,"+ (height - 25) + ")")
+                .call(make_x_axis()
+                    .tickSize(-(height - 25), 0, 0)
+                    .tickFormat(""));
 
-var text = svg.selectAll("text.label")
-    .data(data)
-    .enter()
-    .append("text");
+            var rect = svg.selectAll("rect")
+                .data(data)
+                .enter()
+                .append("rect");
 
-text.attr("x", function(d) {
-        return scaleX(new Date(d.start));
-    })
-    .attr("y", function(d, i) {
-        return (i + 1) * 40 - 2;
-    })
-    .attr("class", "label")
-    .attr("text-anchor", "start")
-    .attr("fill", "black")
-    .text(function(d) {
-        return d.name;
-    });
+            rect.attr("x", function(d) {
+                    return xScale(new Date(d.start));
+                })
+                .attr("y", function(d, i) {
+                    return (i + 1) * 45;
+                })
+                .attr("width", function(d) {
+                    return xScale(new Date(d.end)) - xScale(new Date(d.start));
+                })
+                .attr("height", 23)
+                .attr("fill", function(d, i) {
+                    return COLOURS[i];
+                })
+                .on('mouseover', tip.show)
+                .on('mouseout', tip.hide);
 
-function make_x_axis() {
-    return d3.svg.axis()
-        .scale(scaleX)
-        .orient("bottom")
-        .ticks(10)
-}
+            var text = svg.selectAll("text.label")
+                .data(data)
+                .enter()
+                .append("text");
 
-svg.append("g")
-    .attr("class", "grid")
-    .attr("transform", "translate(0,450)")
-    .call(make_x_axis()
-        .tickSize(-450, 0, 0)
-        .tickFormat("")
-);
+            text.attr("x", function(d) {
+                    return xScale(new Date(d.start));
+                })
+                .attr("y", function(d, i) {
+                    return (i + 1) * 45 - 5;
+                })
+                .attr("class", "label")
+                .attr("text-anchor", "start")
+                .attr("fill", "black")
+                .text(function(d) {
+                    return d.name;
+                });
+        }
+    };
+})(window);

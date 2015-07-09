@@ -2,67 +2,39 @@
 <html>
     <head>
         <meta charset="utf-8" />
-        <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-        <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
-        <script src="http://momentjs.com/downloads/moment.min.js"></script>
-        <style type="text/css">
-            body {
-                font: 10px sans-serif;
-            }
-            #timeline {
-                border: 1px solid #BBB;
-                width: 1600px;
-                padding: 50px;
-            }
-            .x-axis path, .x-axis line {
-                fill: none;
-                stroke: #000;
-                shape-rendering: crispEdges;
-            }
-            text.label {
-                font-size: 10px;
-                /*font-weight: bold;*/
-            }
-            .grid .tick {
-                stroke: lightgrey;
-                stroke-opacity: 0.3;
-                shape-rendering: crispEdges;
-            }
-            .grid path {
-                stroke-width: 0;
-            }
-            .d3-tip {
-                line-height: 1;
-                padding: 8px;
-                background: rgba(0, 0, 0, 0.8);
-                color: #fff;
-                border-radius: 2px;
-            }
+        <link rel="stylesheet" href="css/timeline.css" />
+        <script src="js/d3.v3.min.js" charset="utf-8"></script>
+        <script src="js/d3.tip.v0.6.3.js"></script>
+        <script src="js/moment.min.js"></script>
+        <script type="text/javascript">
+            document.addEventListener("DOMContentLoaded", function(event) {
+                var timeline = new Timeline({
+                    view: {
+                        getTimelineData: function (callback) {
+                            callback({
+                                responseJSON: JSON.stringify([
+                                    {name: "unstable-test-phase", start: 1435144688995, end: 1435144689448},
+                                    {name: "test-functional", start: 1435144698997, end: 1435144759854},
+                                    {name: "publish-rpm", start: 1435144769001, end: 1435144797254},
+                                    {name: "deploy-to-qa", start: 1435144804005, end: 1435144902780},
+                                    {name: "e2e", start: 1435144909013, end: 1435144923492},
+                                    {name: "promote-to-stable", start: 1435144929017, end: 1435144936001},
+                                    {name: "deploy-to-uat", start: 1435144944019, end: 1435145040276}
+                                ])
+                            });
+                        }
+                    },
+                    containerSelector: '#timeline'
+                });
 
-            /* Creates a small triangle extender for the tooltip */
-            .d3-tip:after {
-                box-sizing: border-box;
-                display: inline;
-                font-size: 10px;
-                width: 100%;
-                line-height: 1;
-                color: rgba(0, 0, 0, 0.8);
-                content: "\25BC";
-                position: absolute;
-                text-align: center;
-            }
-
-            /* Style northward tooltips differently */
-            .d3-tip.n:after {
-                margin: -3px 0 0 0;
-                top: 100%;
-                left: 0;
-            }
-        </style>
+                timeline.init();
+            });
+        </script>
     </head>
     <body>
-        <!--<div id="timeline"></div>-->
-        <div style="background-color: #4D4D4D; width: 300px; height: 30px">1</div>
+        <div id="timeline"></div>
+
+        <!--<div style="background-color: #4D4D4D; width: 300px; height: 30px">1</div>
         <div style="background-color: #5DA5DA; width: 300px; height: 30px">2</div>
         <div style="background-color: #FAA43A; width: 300px; height: 30px">3</div>
         <div style="background-color: #60BD68; width: 300px; height: 30px">4</div>
@@ -76,8 +48,8 @@
         <div style="background-color: #B73E26; width: 300px; height: 30px">12</div>
         <div style="background-color: #256629; width: 300px; height: 30px">13</div>
         <div style="background-color: #727BC6; width: 300px; height: 30px">14</div>
-        <div style="background-color: #878A94; width: 300px; height: 30px">15</div>
+        <div style="background-color: #878A94; width: 300px; height: 30px">15</div>-->
 
-        <!--<script src="js/timeline.js"></script>-->
+        <script src="js/timeline.js"></script>
     </body>
 </html>
