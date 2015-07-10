@@ -24,10 +24,12 @@
         .offset([-10, 0])
         .html(function(d) {
             var duration = moment.duration(new Date(d.end) - new Date(d.start)).humanize();
-            return "<div><strong>" + d.name + "</strong>"
-                + "<hr/>Started " + new Date(d.start).toLocaleTimeString()
-                + "<br/>Took " + duration
-                + "<br/>Result " + d.status
+            return "<div>"
+                + "<h3>" + d.name + "</h3>"
+                + "<hr/>"
+                + "<p><strong>Started: </strong>" + new Date(d.start).toLocaleDateString() + " at " + new Date(d.start).toLocaleTimeString() + "</p>"
+                + "<p><strong>Duration: </strong>" + duration + "</p>"
+                + "<p><strong>Result: </strong>" + d.status + "</p>"
                 + "</div>"
         });
 
