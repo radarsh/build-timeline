@@ -15,6 +15,10 @@ text.label {
     font-weight: bold;
 }
 
+a.link:hover {
+    text-decoration: underline;
+}
+
 .grid .tick {
     stroke: grey;
     stroke-opacity: 0.2;

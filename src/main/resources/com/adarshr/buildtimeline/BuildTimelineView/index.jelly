@@ -10,7 +10,8 @@
                 document.addEventListener("DOMContentLoaded", function(event) {
                     var timeline = new Timeline({
                         view: <st:bind value="${it}" />,
-                        containerSelector: '#timeline'
+                        containerSelector: '#timeline',
+                        refreshInterval: 10000
                     });
 
                     timeline.init();

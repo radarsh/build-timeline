@@ -22,21 +22,82 @@
                         getTimelineData: function (callback) {
                             callback({
                                 responseJSON: JSON.stringify([
-                                    {name: "unstable-test-phase", start: new Date(2015, 7, 1, 20, 0, 0).getTime(), end: new Date(2015, 7, 1, 20, 0, 50).getTime(), status: "success"},
-                                    {name: "test-functional-1", start: new Date(2015, 7, 1, 20, 1, 1).getTime(), end: new Date(2015, 7, 1, 20, 5, 30).getTime(), status: "success"},
-                                    {name: "test-functional-2", start: new Date(2015, 7, 1, 20, 1, 5).getTime(), end: new Date(2015, 7, 1, 20, 8, 40).getTime(), status: "success"},
-                                    {name: "test-functional-3", start: new Date(2015, 7, 1, 20, 1, 5).getTime(), end: new Date(2015, 7, 1, 20, 9, 10).getTime(), status: "success"},
-                                    {name: "publish-rpm", start: new Date(2015, 7, 1, 20, 9, 50).getTime(), end: new Date(2015, 7, 1, 20, 14, 0).getTime(), status: "success"},
-                                    {name: "deploy-to-qa-1", start: new Date(2015, 7, 1, 20, 14, 10).getTime(), end: new Date(2015, 7, 1, 20, 18, 30).getTime(), status: "failure"},
-                                    {name: "deploy-to-qa-2", start: new Date(2015, 7, 1, 20, 14, 10).getTime(), end: new Date(2015, 7, 1, 20, 19, 0).getTime(), status: "failure"},
-                                    {name: "e2e", start: new Date(2015, 7, 1, 20, 19, 10).getTime(), end: new Date(2015, 7, 1, 20, 23, 0).getTime(), status: "success"},
-                                    {name: "promote-to-stable", start: new Date(2015, 7, 1, 20, 23, 10).getTime(), end: new Date(2015, 7, 1, 20, 24, 50).getTime(), status: "building"},
-                                    {name: "deploy-to-uat", start: new Date(2015, 7, 1, 20, 25, 0).getTime(), end: new Date(2015, 7, 1, 20, 30, 0).getTime(), status: "building"}
+                                    {
+                                        name: "unstable-test-phase",
+                                        link: "http://localhost:8000/job/unstable-test-phase",
+                                        start: new Date(2015, 7, 1, 20, 0, 0).getTime(),
+                                        end: new Date(2015, 7, 1, 20, 0, 50).getTime(),
+                                        status: "success"
+                                    },
+                                    {
+                                        name: "test-functional-1",
+                                        link: "http://localhost:8000/job/test-functional-1",
+                                        start: new Date(2015, 7, 1, 20, 1, 1).getTime(),
+                                        end: new Date(2015, 7, 1, 20, 5, 30).getTime(),
+                                        status: "success"
+                                    },
+                                    {
+                                        name: "test-functional-2",
+                                        link: "http://localhost:8000/job/test-functional-2",
+                                        start: new Date(2015, 7, 1, 20, 1, 5).getTime(),
+                                        end: new Date(2015, 7, 1, 20, 8, 40).getTime(),
+                                        status: "success"
+                                    },
+                                    {
+                                        name: "test-functional-3",
+                                        link: "http://localhost:8000/job/test-functional-3",
+                                        start: new Date(2015, 7, 1, 20, 1, 5).getTime(),
+                                        end: new Date(2015, 7, 1, 20, 9, 10).getTime(),
+                                        status: "success"
+                                    },
+                                    {
+                                        name: "publish-rpm",
+                                        link: "http://localhost:8000/job/publish-rpm",
+                                        start: new Date(2015, 7, 1, 20, 9, 50).getTime(),
+                                        end: new Date(2015, 7, 1, 20, 14, 0).getTime(),
+                                        status: "success"
+                                    },
+                                    {
+                                        name: "deploy-to-qa-1",
+                                        link: "http://localhost:8000/job/deploy-to-qa-1",
+                                        start: new Date(2015, 7, 1, 20, 14, 10).getTime(),
+                                        end: new Date(2015, 7, 1, 20, 18, 30).getTime(),
+                                        status: "failure"
+                                    },
+                                    {
+                                        name: "deploy-to-qa-2",
+                                        link: "http://localhost:8000/job/deploy-to-qa-2",
+                                        start: new Date(2015, 7, 1, 20, 14, 10).getTime(),
+                                        end: new Date(2015, 7, 1, 20, 19, 0).getTime(),
+                                        status: "failure"
+                                    },
+                                    {
+                                        name: "e2e",
+                                        link: "http://localhost:8000/job/e2e",
+                                        start: new Date(2015, 7, 1, 20, 19, 10).getTime(),
+                                        end: new Date(2015, 7, 1, 20, 23, 0).getTime(),
+                                        status: "success"
+                                    },
+                                    {
+                                        name: "promote-to-stable",
+                                        link: "http://localhost:8000/job/promote-to-stable",
+                                        start: new Date(2015, 7, 1, 20, 23, 10).getTime(),
+                                        end: new Date(2015, 7, 1, 20, 24, 50).getTime(),
+                                        status: "building"
+                                    },
+                                    {
+                                        name: "deploy-to-uat",
+                                        link: "http://localhost:8000/job/deploy-to-uat",
+                                        start: new Date(2015, 7, 1, 20, 25, 0).getTime(),
+                                        end: new Date(2015, 7, 1, 20, 30, 0).getTime(),
+                                        status: "building"
+                                    }
                                 ])
                             });
                         }
                     },
-                    containerSelector: '#timeline'
+                    containerSelector: '#timeline',
+                    refreshInterval: 100000
                 });
 
                 timeline.init();

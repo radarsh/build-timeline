@@ -36,13 +36,14 @@
     scope.Timeline = function (options) {
         this.view = options.view;
         this.container = document.querySelector(options.containerSelector);
+        this.refreshInterval = options.refreshInterval;
     };
 
     scope.Timeline.prototype = {
         init: function() {
             this._refresh();
 
-            setInterval(this._refresh.bind(this), 10000);
+            setInterval(this._refresh.bind(this), this.refreshInterval);
         },
 
         _refresh: function () {
@@ -52,85 +53,148 @@
         _draw: function(response) {
             var data = JSON.parse(response.responseJSON);
             this.container.innerHTML = '';
+            var metadata = this._getChartMetadata(data);
 
+            var zoom = d3.behavior.zoom()
+                .x(metadata.xScale)
+                .scaleExtent([0.1, 16])
+                .on("zoom", zoomed);
+
+            var svg = d3
+                .select(this.container)
+                .append("svg")
+                .attr("width", metadata.width)
+                .attr("height", metadata.height)
+                .call(zoom);
+
+            svg.selectAll("a")
+                .data(data)
+                .enter()
+                .append("a")
+                .attr("class", "link")
+                .attr("xlink:href", function(d) {return d.link;})
+                .attr("x", 10)
+                .attr("y", function(d, i) {return (i + 1) * 45;})
+                .append("text")
+                .attr("x", 10)
+                .attr("y", function(d, i) {return (i + 1) * 45;})
+                .attr("class", "label")
+                .attr("text-anchor", "start")
+                .attr("fill", function(d) {
+                    if (d.status == "success" || d.status == "building") {
+                        return "blue";
+                    } if (d.status == "failure") {
+                        return "red";
+                    }
+                })
+                .text(function(d) {return d.name;});
+
+            var chartClip = svg.append("clipPath")
+                .attr("id", "chartClip")
+                .append("rect")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("height", metadata.height)
+                .attr("width", metadata.width);
+
+            var chart = svg.append("g")
+                .attr("class", "chart")
+                .attr("transform", "translate(150,0)");
+
+            chart.append("g")
+                .attr("class", "x-axis")
+                .attr("transform", "translate(0," + (metadata.height - 25) + ")")
+                .call(metadata.xAxis);
+
+            chart.call(tip);
+
+            var xGrid = this._drawXGrid(chart, metadata);
+            var yGrid = this._drawYGrid(chart, metadata);
+
+            var rect = chart.append("g")
+                .attr("clip-path", "url(#chartClip)")
+                .attr("transform", "translate(0,0)")
+                .selectAll("rect")
+                .data(data)
+                .enter()
+                .append("rect");
+
+            rect.attr("x", function(d) {return metadata.xScale(new Date(d.start));})
+                .attr("y", function(d, i) {return (i + 1) * 45 - 15;})
+                .attr("width", function(d) {return metadata.xScale(new Date(d.end)) - metadata.xScale(new Date(d.start));})
+                .attr("height", 23)
+                .attr("fill", function(d, i) {return COLOURS[i];})
+                .on("mouseover", tip.show)
+                .on("mouseout", tip.hide);
+
+            function zoomed() {
+                svg.select(".x-axis").call(metadata.xAxis);
+                rect.attr("x", function(d) {return metadata.xScale(new Date(d.start));})
+                    .attr("width", function(d) {return metadata.xScale(new Date(d.end)) - metadata.xScale(new Date(d.start));});
+
+                xGrid.call(make_x_axis()
+                    .tickSize(-(metadata.height - 25), 0, 0)
+                    .tickFormat(""));
+
+                function make_x_axis() {
+                    return d3.svg.axis()
+                        .scale(metadata.xScale)
+                        .orient("bottom")
+                        .ticks(20);
+                }
+            }
+        },
+
+        _getChartMetadata: function(data) {
             var width = this.container.clientWidth;
             var height = data.length * 45 + 80;
             var min = d3.min(data, function(d) {return d.start;});
             var max = d3.max(data, function(d) {return d.end;});
             var xScale = d3.time.scale().domain([new Date(min), new Date(max)]).range([0, width]);
+            var yScale = d3.scale.linear().domain([1, 10]).range([0, height]);
             var xAxis = d3.svg.axis().scale(xScale).ticks(20);
 
-            var svg = d3
-                .select(this.container)
-                .append("svg")
-                .attr("width", width)
-                .attr("height", height);
+            return {
+                width: width,
+                height: height,
+                min: min,
+                max: max,
+                xScale: xScale,
+                yScale: yScale,
+                xAxis: xAxis
+            };
+        },
 
-            svg.append("g")
-                .attr("class", "x-axis")
-                .attr("transform", "translate(0," + (height - 25) + ")")
-                .call(xAxis);
-
-            svg.call(tip);
+        _drawXGrid: function(chart, metadata) {
+            return chart.append("g")
+                .attr("class", "grid")
+                .attr("transform", "translate(0,"+ (metadata.height - 25) + ")")
+                .call(make_x_axis()
+                    .tickSize(-(metadata.height - 25), 0, 0)
+                    .tickFormat(""));
 
             function make_x_axis() {
                 return d3.svg.axis()
-                    .scale(xScale)
+                    .scale(metadata.xScale)
                     .orient("bottom")
                     .ticks(20)
             }
+        },
 
-            svg.append("g")
+        _drawYGrid: function(chart, metadata) {
+            return chart.append("g")
                 .attr("class", "grid")
-                .attr("transform", "translate(0,"+ (height - 25) + ")")
-                .call(make_x_axis()
-                    .tickSize(-(height - 25), 0, 0)
-                    .tickFormat(""));
+                .call(make_y_axis()
+                    .tickSize(-metadata.width, 0, 0)
+                    .tickFormat("")
+            );
 
-            var rect = svg.selectAll("rect")
-                .data(data)
-                .enter()
-                .append("rect");
-
-            rect.attr("x", function(d) {
-                    return xScale(new Date(d.start));
-                })
-                .attr("y", function(d, i) {
-                    return (i + 1) * 45;
-                })
-                .attr("width", function(d) {
-                    return xScale(new Date(d.end)) - xScale(new Date(d.start));
-                })
-                .attr("height", 23)
-                .attr("fill", function(d, i) {
-                    return COLOURS[i];
-                })
-                .on('mouseover', tip.show)
-                .on('mouseout', tip.hide);
-
-            var text = svg.selectAll("text.label")
-                .data(data)
-                .enter()
-                .append("text");
-
-            text.attr("x", function(d) {
-                    return xScale(new Date(d.start));
-                })
-                .attr("y", function(d, i) {
-                    return (i + 1) * 45 - 5;
-                })
-                .attr("class", "label")
-                .attr("text-anchor", "start")
-                .attr("fill", function(d) {
-                    if (d.status == "success" || d.status == "building") {
-                        return "black";
-                    } if (d.status == "failure") {
-                        return "red";
-                    }
-                })
-                .text(function(d) {
-                    return d.name;
-                });
+            function make_y_axis() {
+                return d3.svg.axis()
+                    .scale(metadata.yScale)
+                    .orient("left")
+                    .ticks(10)
+            }
         }
     };
 })(window);
