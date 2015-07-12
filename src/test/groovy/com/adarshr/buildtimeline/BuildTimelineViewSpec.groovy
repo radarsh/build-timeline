@@ -34,10 +34,12 @@ class BuildTimelineViewSpec extends Specification {
             data[0].start > 0
             data[0].end > data[0].start
             data[0].status == 'success'
+            data[0].link == "${Jenkins.instance.rootUrl}job/parent/"
             data[1].name == 'child'
             data[1].start > data[0].end
             data[1].end > data[1].start
             data[1].status == 'success'
+            data[1].link == "${Jenkins.instance.rootUrl}job/child/"
     }
 
     def "get timeline data when no downstream projects exist"() {

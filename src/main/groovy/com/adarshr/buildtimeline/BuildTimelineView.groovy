@@ -57,7 +57,8 @@ class BuildTimelineView extends AbstractView {
             name: project.name,
             start : project.lastBuild?.startTimeInMillis,
             end: project.lastBuild?.startTimeInMillis + project.lastBuild?.duration,
-            status: project.lastBuild.result.toString().toLowerCase()
+            status: project.lastBuild.result.toString().toLowerCase(),
+            link: "${Jenkins.instance.rootUrl}${project.shortUrl}"
         ]
     }
 
