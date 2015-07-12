@@ -67,6 +67,17 @@
                 .attr("height", metadata.height)
                 .call(zoom);
 
+            svg.selectAll("rect.bg")
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr("class", "bg")
+                .attr("x", 0)
+                .attr("y", function(d, i) {return (i + 1) * 45 - 15;})
+                .attr("width", metadata.width)
+                .attr("height", 23)
+                .attr("fill", "#FAFAFA");
+
             svg.selectAll("a")
                 .data(data)
                 .enter()
@@ -99,7 +110,7 @@
 
             var chart = svg.append("g")
                 .attr("class", "chart")
-                .attr("transform", "translate(150,0)");
+                .attr("transform", "translate(" + this._getMaxTextWidth(data) + ",0)");
 
             chart.append("g")
                 .attr("class", "x-axis")
@@ -108,8 +119,7 @@
 
             chart.call(tip);
 
-            var xGrid = this._drawXGrid(chart, metadata);
-            var yGrid = this._drawYGrid(chart, metadata);
+            var grid = this._drawGrid(chart, metadata);
 
             var rect = chart.append("g")
                 .attr("clip-path", "url(#chartClip)")
@@ -132,7 +142,7 @@
                 rect.attr("x", function(d) {return metadata.xScale(new Date(d.start));})
                     .attr("width", function(d) {return metadata.xScale(new Date(d.end)) - metadata.xScale(new Date(d.start));});
 
-                xGrid.call(make_x_axis()
+                grid.call(make_x_axis()
                     .tickSize(-(metadata.height - 25), 0, 0)
                     .tickFormat(""));
 
@@ -151,7 +161,6 @@
             var min = d3.min(data, function(d) {return d.start;});
             var max = d3.max(data, function(d) {return d.end;});
             var xScale = d3.time.scale().domain([new Date(min), new Date(max)]).range([0, width]);
-            var yScale = d3.scale.linear().domain([1, 10]).range([0, height]);
             var xAxis = d3.svg.axis().scale(xScale).ticks(20);
 
             return {
@@ -160,12 +169,30 @@
                 min: min,
                 max: max,
                 xScale: xScale,
-                yScale: yScale,
                 xAxis: xAxis
             };
         },
 
-        _drawXGrid: function(chart, metadata) {
+        _getMaxTextWidth: function(data) {
+            return 50 + d3.max(data, function(d) {
+                var computedStyles = window.getComputedStyle(this.container.querySelector("text.label"));
+                var font = computedStyles.getPropertyValue("font-weight") + " "
+                    + computedStyles.getPropertyValue("font-size") + " "
+                    + computedStyles.getPropertyValue("font-family");
+
+                return getTextWidth(d.name, font);
+            }.bind(this));
+
+            function getTextWidth(text, font) {
+                var canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement("canvas"));
+                var context = canvas.getContext("2d");
+                context.font = font;
+                var metrics = context.measureText(text);
+                return metrics.width;
+            }
+        },
+
+        _drawGrid: function(chart, metadata) {
             return chart.append("g")
                 .attr("class", "grid")
                 .attr("transform", "translate(0,"+ (metadata.height - 25) + ")")
@@ -178,22 +205,6 @@
                     .scale(metadata.xScale)
                     .orient("bottom")
                     .ticks(20)
-            }
-        },
-
-        _drawYGrid: function(chart, metadata) {
-            return chart.append("g")
-                .attr("class", "grid")
-                .call(make_y_axis()
-                    .tickSize(-metadata.width, 0, 0)
-                    .tickFormat("")
-            );
-
-            function make_y_axis() {
-                return d3.svg.axis()
-                    .scale(metadata.yScale)
-                    .orient("left")
-                    .ticks(10)
             }
         }
     };

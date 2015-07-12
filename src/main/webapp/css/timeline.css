@@ -1,7 +1,8 @@
 #timeline {
     border: 1px solid #BBB;
     width: 100%;
-    font: 10px sans-serif;
+    font-size: 10px;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 }
 
 .x-axis path, .x-axis line {
@@ -11,7 +12,7 @@
 }
 
 text.label {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: bold;
 }
 
@@ -46,7 +47,7 @@ a.link:hover {
     font-size: 10px;
     width: 100%;
     line-height: 1;
-    color: #555;
+    color: rgba(2, 2, 2, 0.3);
     content: "\25BC";
     position: absolute;
     text-align: center;
@@ -54,7 +55,7 @@ a.link:hover {
 
 /* Style northward tooltips differently */
 .d3-tip.n:after {
-    margin: -3px 0 0 0;
+    margin: 0 0 0 0;
     top: 100%;
     left: 0;
 }
