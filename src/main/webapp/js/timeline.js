@@ -37,13 +37,16 @@
         this.view = options.view;
         this.container = document.querySelector(options.containerSelector);
         this.refreshInterval = options.refreshInterval;
+        this.autoRefresh = options.autoRefresh;
     };
 
     scope.Timeline.prototype = {
         init: function() {
             this._refresh();
 
-            setInterval(this._refresh.bind(this), this.refreshInterval);
+            if (this.autoRefresh) {
+                setInterval(this._refresh.bind(this), this.refreshInterval);
+            }
         },
 
         _refresh: function () {
