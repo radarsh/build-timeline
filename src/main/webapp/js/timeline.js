@@ -37,7 +37,7 @@
         this.view = options.view;
         this.container = document.querySelector(options.containerSelector);
         this.refreshInterval = options.refreshInterval;
-        this.autoRefresh = options.autoRefresh;
+        this.autoRefresh = options.autoRefresh || true;
     };
 
     scope.Timeline.prototype = {
@@ -54,7 +54,7 @@
         },
 
         _draw: function(response) {
-            var data = JSON.parse(response.responseJSON);
+            var data = response.responseJSON.rows;
             this.container.innerHTML = '';
 
             var metadata = this._getChartMetadata(data);

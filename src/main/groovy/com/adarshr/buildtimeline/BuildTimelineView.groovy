@@ -5,6 +5,7 @@ import hudson.model.AbstractProject
 import hudson.model.ViewDescriptor
 import hudson.util.ListBoxModel
 import jenkins.model.Jenkins
+import net.sf.json.JSONObject
 import org.kohsuke.stapler.DataBoundConstructor
 import org.kohsuke.stapler.StaplerRequest
 import org.kohsuke.stapler.bind.JavaScriptMethod
@@ -28,10 +29,10 @@ class BuildTimelineView extends AbstractView {
     }
 
     @JavaScriptMethod
-    String getTimelineData() {
+    JSONObject getTimelineData() {
         Set rows = []
         addDownstreamProjects(upstreamProject, rows)
-        JsonOutput.toJson(rows.asList().sort {it.start})
+        [rows: rows.asList().sort { it.start }]
     }
 
     String getResources() {
@@ -42,13 +43,13 @@ class BuildTimelineView extends AbstractView {
         Jenkins.instance.getItem(upstreamJob, Jenkins.instance, AbstractProject)
     }
 
-    private void addDownstreamProjects(AbstractProject startProject, Set rows) {
+    private void addDownstreamProjects(AbstractProject startProject, Set rows = []) {
         rows << getBuildMetadata(startProject)
 
         startProject.downstreamProjects?.each {
-            if (it.lastBuild.causes.first().upstreamBuild == startProject.lastBuild.number) {
+//            if (it.lastBuild.causes.first().upstreamBuild == startProject.lastBuild.number) {
                 addDownstreamProjects(it, rows)
-            }
+//            }
         }
     }
 

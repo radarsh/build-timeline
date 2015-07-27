@@ -1,6 +1,5 @@
 package com.adarshr.buildtimeline
 
-import groovy.json.JsonSlurper
 import hudson.model.Result
 import hudson.tasks.BuildTrigger
 import jenkins.model.Jenkins
@@ -26,10 +25,9 @@ class BuildTimelineViewSpec extends Specification {
             rule.waitUntilNoActivity()
 
         when:
-            String json = view.timelineData
+            List data = view.timelineData.rows
 
         then:
-            List data = new JsonSlurper().parseText(json) as List
             data[0].name == 'parent'
             data[0].start > 0
             data[0].end > data[0].start
@@ -49,10 +47,9 @@ class BuildTimelineViewSpec extends Specification {
             rule.waitUntilNoActivity()
 
         when:
-            String json = view.timelineData
+            List data = view.timelineData.rows
 
         then:
-            List data = new JsonSlurper().parseText(json) as List
             data[0].name == 'parent'
             data[0].start > 0
             data[0].end > data[0].start
@@ -72,10 +69,9 @@ class BuildTimelineViewSpec extends Specification {
             rule.waitUntilNoActivity()
 
         when:
-            String json = view.timelineData
+            List data = view.timelineData.rows
 
         then:
-            List data = new JsonSlurper().parseText(json) as List
             data[0].name == 'parent'
             data[0].start > 0
             data[0].end > data[0].start
