@@ -12,10 +12,6 @@ buildscript {
 
 apply plugin: 'org.jenkins-ci.jpi'
 
-group = 'com.adarshr'
-version = '1.0-SNAPSHOT'
-description = 'Build Timeline Plugin'
-
 dependencies {
     testCompile 'org.spockframework:spock-core:0.7-groovy-1.8'
 }
