@@ -1,5 +1,5 @@
 package com.adarshr.buildtimeline
-import groovy.json.JsonOutput
+
 import hudson.Extension
 import hudson.model.AbstractProject
 import hudson.model.ViewDescriptor
@@ -31,6 +31,7 @@ class BuildTimelineView extends AbstractView {
     @JavaScriptMethod
     JSONObject getTimelineData() {
         Set rows = []
+        BuildMetadata.oldest = 0
         addDownstreamProjects(upstreamProject, rows)
         [rows: rows.asList().sort { it.start }]
     }
@@ -44,23 +45,11 @@ class BuildTimelineView extends AbstractView {
     }
 
     private void addDownstreamProjects(AbstractProject startProject, Set rows = []) {
-        rows << getBuildMetadata(startProject)
+        rows << new BuildMetadata(startProject).data
 
         startProject.downstreamProjects?.each {
-//            if (it.lastBuild.causes.first().upstreamBuild == startProject.lastBuild.number) {
-                addDownstreamProjects(it, rows)
-//            }
+            addDownstreamProjects(it, rows)
         }
-    }
-
-    private Map getBuildMetadata(AbstractProject project) {
-        [
-            name: project.name,
-            start : project.lastBuild?.startTimeInMillis,
-            end: project.lastBuild?.startTimeInMillis + project.lastBuild?.duration,
-            status: project.lastBuild.result.toString().toLowerCase(),
-            link: "${Jenkins.instance.rootUrl}${project.shortUrl}"
-        ]
     }
 
     @Extension
