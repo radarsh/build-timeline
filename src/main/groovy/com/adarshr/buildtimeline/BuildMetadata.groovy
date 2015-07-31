@@ -18,20 +18,14 @@ class BuildMetadata {
     }
 
     private long getEnd() {
-        def end = project.lastBuild.result.toString().toLowerCase() == 'building' ? System.currentTimeMillis() : project.lastBuild?.startTimeInMillis + project.lastBuild?.duration
-
-        if (start == 0) {
-            end = 0
-        }
-
-        end
+        !project.lastBuild.result ? System.currentTimeMillis() : project.lastBuild?.startTimeInMillis + project.lastBuild?.duration
     }
 
     private long getStart() {
         def start = project.lastBuild?.startTimeInMillis
 
         if (start < oldest) {
-            start = 0
+            start = oldest
         }
 
         if (oldest == 0) {
